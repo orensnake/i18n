@@ -48,8 +48,25 @@ func (t *TTranslation) loadDict(fName string) fTranslation {
 
 func (t *TTranslation) Init(translationFile string) {
 	t.Lang, _ = t.getLocale()
-	//t.Trans = new(fTranslation)
 	t.trans = t.loadDict(translationFile)
+	// Check system language in translations
+	fnd := false
+	for i := 0; i < len(t.trans.Lang); i++ {
+		if t.Lang == t.trans.Lang[i].Name {
+			fnd = true
+			break
+		}
+	}
+	if !fnd {
+		fmt.Println("Translation to", t.Lang, "not found.")
+		if t.trans.Lang != nil {
+			t.Lang = t.trans.Lang[0].Name
+			fmt.Println("Using", t.Lang, "as default")
+		} else {
+			fmt.Println("Translations not found. Exiting.")
+			os.Exit(-1)
+		}
+	}
 }
 
 func (t TTranslation) SetLang(lang string) {
